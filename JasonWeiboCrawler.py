@@ -4,7 +4,6 @@ import requests
 from lxml import etree
 import threading
 import sys
-import random
 import time
 import urllib
 import re
