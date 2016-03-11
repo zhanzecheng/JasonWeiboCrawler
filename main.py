@@ -66,6 +66,7 @@ if __name__ == '__main__':
             jasonParser = JasonWeiboParser(sys.argv[6])
             jasonParser.startparsing()
             jasonParser.save()
+            jasonParser.clean()
         else:
             print 'Argv6 should be either "k" or "u"'
             os._exit(6)
