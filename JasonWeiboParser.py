@@ -10,6 +10,23 @@ import json
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+def deletefilesorfolders(src):
+    '''
+    delete files or folders
+    '''
+    if os.path.isfile(src):
+        try:
+            os.remove(src)
+        except:
+            pass
+    elif os.path.isdir(src):
+        for item in os.listdir(src):
+            itemsrc=os.path.join(src,item)
+            deletefilesorfolders(itemsrc)
+        try:
+            os.rmdir(src)
+        except:
+            pass
 
 class JasonWeiboParser:
     '''
@@ -94,6 +111,13 @@ class JasonWeiboParser:
         jsonstr = json.dumps(self.weibos, indent=4, ensure_ascii=False)
         f.write(jsonstr)
         f.close()
+
+    def clean(self):
+        '''
+        delete the raw files and folder
+        '''
+        src=sys.path[0] + '/Weibo_raw/' + self.uid
+        deletefilesorfolders(src)
 
 
 if __name__ == '__main__':
