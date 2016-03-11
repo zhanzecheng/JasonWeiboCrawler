@@ -136,20 +136,23 @@ class JasonWeiboCrawler:
         :param trycount: When attempt to download the same page exceeds trycount, the program simply gives up.
         :return: Returns fasle when the program gives up, otherwise, true.
         '''
+        attempt = 0
         try:
             os.mkdir(sys.path[0] + '/Weibo_raw/' + self.wanted)
         except Exception, e:
             print str(e)
         isdone = False
-        while not isdone:
+        while not isdone and attempt < trycount:
             try:
                 pagenum = self.getpagenum()
                 isdone = True
             except Exception, e:
-                print str(e)
+                attempt += 1
+            if attempt == trycount:
+                return False
         i = startpage
-        attempt = 0
         while i <= pagenum:
+            attempt = 0
             isneeded = False
             html = ''
             while not isneeded and attempt < trycount:
@@ -159,7 +162,6 @@ class JasonWeiboCrawler:
                     attempt += 1
                 if attempt == trycount:
                     return False
-            attempt = 0
             self.savehtml(sys.path[0] + '/Weibo_raw/' + self.wanted + '/' + str(i) + '.txt', html)
             print str(i) + '/' + str(pagenum - 1)
             i += 1
@@ -175,8 +177,8 @@ class JasonWeiboCrawler:
         :return:
         '''
         i = startpage
-        attempt = 0
         while i <= endpage:
+            attempt = 0
             isneeded = False
             html = ''
             while not isneeded and attempt < trycount:  # Give up when attempt to download same page exceeds the threshold.
@@ -189,7 +191,6 @@ class JasonWeiboCrawler:
                         self.result = False
                         self.lock.release()
                         return False
-            attempt = 0
             self.savehtml(sys.path[0] + '/Weibo_raw/' + self.wanted + '/' + str(i) + '.txt', html)
             print str(i) + '/' + str(totalpagenum)
             i += 1
@@ -205,6 +206,7 @@ class JasonWeiboCrawler:
         :param trycount: When attempt to download the same page exceeds trycount, the thread simply gives up.
         :return: Returns fasle when any thread gives up, otherwise, true.
         '''
+        attempt = 0
         try:
             os.mkdir(sys.path[0] + '/Weibo_raw/' + self.wanted)
         except Exception, e:
@@ -212,12 +214,14 @@ class JasonWeiboCrawler:
         isdone = False
         self.result = True
         self.lock = threading.Lock()
-        while not isdone:
+        while not isdone and attempt < trycount:
             try:
                 pagenum = self.getpagenum()
                 isdone = True
             except Exception, e:
-                print str(e)
+                attempt += 1
+            if attempt == trycount:
+                return False
         tasks = []
         threads = pagenum / interval
         for i in range(0, threads):
