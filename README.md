@@ -6,6 +6,7 @@ author:Jason Wood
 
 email:wujiecheng@bupt.edu.cn
 
+[项目介绍](http://blog.csdn.net/Jason2031/article/details/48698829)
 ------------------
 开发环境：
 
