@@ -7,6 +7,7 @@ import sys
 import time
 import urllib
 import re
+import json
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -118,16 +119,16 @@ class JasonWeiboCrawler:
                             text = highpoints.sub(u'\u25FD', text)  # Emoji handling, seems doesn't work.
                             weibotext = text
                             weibos.append(weibotext)
-                f = open(sys.path[0] + '/keywords/' + keyword + '.txt', 'w')
                 print str(i) + '/' + str(pagenum)
             except Exception, e:
                 print str(e)
-        # f.write()
-        for weibo in weibos:
-            try:
-                f.write(str(weibo) + 2 * os.linesep)
-            except Exception, ex:
-                print str(ex)
+        f = open(sys.path[0] + '/keywords/' + keyword + '.txt', 'w')
+        try:
+            f.write(json.dumps(weibos,indent=4,ensure_ascii=False))
+        except Exception,ex:
+            print str(ex)
+        finally:
+            f.close()
 
     def startcrawling(self, startpage=1, trycount=20):
         '''
