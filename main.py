@@ -46,23 +46,26 @@ if __name__ == '__main__':
             jasonCrawler.keywordcrawling(sys.argv[6])
         elif sys.argv[5] == 'u':
             jasonCrawler = JasonWeiboCrawler(cookie, sys.argv[6])
-            if sys.argv[7] == 's':
-                try:
-                    trycount = int(sys.argv[8])
-                except:
-                    trycount = 20
-                print jasonCrawler.startcrawling(trycount=trycount)
-            elif sys.argv[7] == 'm':
-                try:
-                    trycount = int(sys.argv[8])
-                    interval = int(sys.argv[9])
-                except:
-                    trycount = 20
-                    interval = 10
-                print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount)
+            if sys.argv[7] is not None:
+                if sys.argv[7] == 's':
+                    try:
+                        trycount = int(sys.argv[8])
+                    except:
+                        trycount = 20
+                    print jasonCrawler.startcrawling(trycount=trycount)
+                elif sys.argv[7] == 'm':
+                    try:
+                        trycount = int(sys.argv[8])
+                        interval = int(sys.argv[9])
+                    except:
+                        trycount = 20
+                        interval = 10
+                    print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount)
+                else:
+                    print 'Argv7 should be either "s" or "m"'
+                    os._exit(7)
             else:
-                print 'Argv7 should be either "s" or "m"'
-                os._exit(7)
+                print jasonCrawler.startcrawling(trycount=20)
             jasonParser = JasonWeiboParser(sys.argv[6])
             jasonParser.startparsing()
             jasonParser.save()
