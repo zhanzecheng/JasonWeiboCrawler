@@ -28,14 +28,16 @@ class JasonWeiboCrawler:
         self.cook = {"Cookie": cookie}
         self.wanted = wanted_user
 
-    def geturl(self, pagenum=1):
-        url = 'http://weibo.cn/' + self.wanted + '/profile'
+    def geturl(self, pagenum=1,istest=False):
+        url = 'http://weibo.cn/' + self.wanted
+        if istest is False:
+            url+='/profile'
         if pagenum > 1:
             url = url + '?page=' + str(pagenum)
         return url
 
-    def getpagenum(self):
-        url = self.geturl(pagenum=1)
+    def getpagenum(self,istest=False):
+        url = self.geturl(pagenum=1,istest=istest)
         html = requests.get(url, cookies=self.cook).content  # Visit the first page to get the page number.
         selector = etree.HTML(html)
         pagenum = selector.xpath('//input[@name="mp"]/@value')[0]
@@ -130,7 +132,7 @@ class JasonWeiboCrawler:
         finally:
             f.close()
 
-    def startcrawling(self, startpage=1, trycount=20):
+    def startcrawling(self, startpage=1, trycount=20, istest=False):
         '''
         Single-thread downloading weibo texts.
         :param startpage: Usually omitted
@@ -145,7 +147,7 @@ class JasonWeiboCrawler:
         isdone = False
         while not isdone and attempt < trycount:
             try:
-                pagenum = self.getpagenum()
+                pagenum = self.getpagenum(istest=istest)
                 isdone = True
             except Exception, e:
                 attempt += 1
@@ -168,7 +170,7 @@ class JasonWeiboCrawler:
             i += 1
         return True
 
-    def threadcrawling(self, startpage, endpage, totalpagenum, trycount=20):
+    def threadcrawling(self, startpage, endpage, totalpagenum, trycount=20, istest=False):
         '''
         Just don't use this method directly.
         :param startpage:
@@ -183,7 +185,7 @@ class JasonWeiboCrawler:
             isneeded = False
             html = ''
             while not isneeded and attempt < trycount:  # Give up when attempt to download same page exceeds the threshold.
-                html = self.getpage(self.geturl(i))
+                html=self.getpage(self.geturl(i,istest=istest))
                 isneeded = self.ispageneeded(html)
                 if not isneeded:
                     attempt += 1
@@ -200,7 +202,7 @@ class JasonWeiboCrawler:
             self.lock.release()
         return True
 
-    def multithreadcrawling(self, interval=10, trycount=20):
+    def multithreadcrawling(self, interval=10, trycount=20, istest=False):
         '''
         Multi-thread downloading weibo texts.
         :param interval: Thread interval, the page number every thread downloads.
@@ -217,7 +219,7 @@ class JasonWeiboCrawler:
         self.lock = threading.Lock()
         while not isdone and attempt < trycount:
             try:
-                pagenum = self.getpagenum()
+                pagenum = self.getpagenum(istest=istest)
                 isdone = True
             except Exception, e:
                 attempt += 1
@@ -227,11 +229,11 @@ class JasonWeiboCrawler:
         threads = pagenum / interval
         for i in range(0, threads):
             t = threading.Thread(target=self.threadcrawling,
-                                 args=(i * interval, (i + 1) * interval - 1, pagenum, trycount))
+                                 args=(i * interval, (i + 1) * interval - 1, pagenum, trycount,istest))
             tasks.append(t)
             t.start()
         t = threading.Thread(target=self.threadcrawling,
-                             args=(pagenum - pagenum % interval, pagenum, pagenum, trycount))
+                             args=(pagenum - pagenum % interval, pagenum, pagenum, trycount,istest))
         tasks.append(t)
         t.start()
         for t in tasks:
