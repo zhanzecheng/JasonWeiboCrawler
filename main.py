@@ -23,19 +23,21 @@ if __name__ == '__main__':
         @:parameter5: Function control, "k": keyword crawling, "u": user's weibos crawling. (must-have)
         @:parameter6: If the 5th parameter is "k", then this parameter should be the interested keyword, otherwise, interested uid. (must-have)
         @:parameter7: Thread control, "s": single thread, "m": multi thread. (only useful when parameter5 is "u", default "s")
-        @:parameter8: Try count, when attempt to download the same page exceeds try count, the thread simply gives up and returns. (default and recommended 20)
-        @:parameter9: Multi-thread control, thread interval. (only useful when parameter4 is "m", default 10)
+        @:parameter8: This arg is for weibo gathering process, it's purpose is to tell whether this program to run in regular mode or test mode. (must-have, r/t, default r)
+        @:parameter9: Try count, when attempt to download the same page exceeds try count, the thread simply gives up and returns. (default and recommended 20)
+        @:parameter10: Multi-thread control, thread interval. (only useful when parameter4 is "m", default 10)
     '''
 
-    if not (6 < len(sys.argv) < 11):
+    if not (6 < len(sys.argv) < 12):
         print '''
         Usage:
             parameter1~4: Cookie. (must-have)
             parameter5: Function control, "k": keyword crawling, "u": user's weibos crawling. (must-have)
             parameter6: If the 5th parameter is "k", then this parameter should be the interested keyword, otherwise, interested uid. (must-have)
             parameter7: Thread control, "s": single thread, "m": multi thread. (only useful when parameter5 is "u", default "s")
-            parameter8: Try count, when attempt to download the same page exceeds try count, the thread simply gives up and returns. (default and recommended 20)
-            parameter9: Multi-thread control, thread interval. (only useful when parameter4 is "m", default 10)
+            parameter8: This arg is for weibo gathering process, it's purpose is to tell whether this program to run in regular mode or test mode. (must-have, r/t, default r)
+            parameter9: Try count, when attempt to download the same page exceeds try count, the thread simply gives up and returns. (default and recommended 20)
+            parameter10: Multi-thread control, thread interval. (only useful when parameter4 is "m", default 10)
         '''
         os._exit(-1)
     else:
@@ -49,18 +51,24 @@ if __name__ == '__main__':
             if sys.argv[7] is not None:
                 if sys.argv[7] == 's':
                     try:
-                        trycount = int(sys.argv[8])
+                        trycount = int(sys.argv[9])
                     except:
                         trycount = 20
-                    print jasonCrawler.startcrawling(trycount=trycount)
+                    if sys.argv[8] == 't':
+                        print jasonCrawler.startcrawling(trycount=trycount,istest=True)
+                    else:
+                        print jasonCrawler.startcrawling(trycount=trycount)
                 elif sys.argv[7] == 'm':
                     try:
-                        trycount = int(sys.argv[8])
-                        interval = int(sys.argv[9])
+                        trycount = int(sys.argv[9])
+                        interval = int(sys.argv[10])
                     except:
                         trycount = 20
                         interval = 10
-                    print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount)
+                    if sys.argv[8] == 't':
+                        print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount,istest=True)
+                    else:
+                        print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount)
                 else:
                     print 'Argv7 should be either "s" or "m"'
                     os._exit(7)
