@@ -29,7 +29,7 @@ class JasonWeiboCrawler:
         self.wanted = wanted_user
 
     def geturl(self, pagenum=1):
-        url = 'http://weibo.cn/' + self.wanted
+        url = 'http://weibo.cn/' + self.wanted + '/profile'
         if pagenum > 1:
             url = url + '?page=' + str(pagenum)
         return url
@@ -124,8 +124,8 @@ class JasonWeiboCrawler:
                 print str(e)
         f = open(sys.path[0] + '/keywords/' + keyword + '.txt', 'w')
         try:
-            f.write(json.dumps(weibos,indent=4,ensure_ascii=False))
-        except Exception,ex:
+            f.write(json.dumps(weibos, indent=4, ensure_ascii=False))
+        except Exception, ex:
             print str(ex)
         finally:
             f.close()
@@ -164,7 +164,7 @@ class JasonWeiboCrawler:
                 if attempt == trycount:
                     return False
             self.savehtml(sys.path[0] + '/Weibo_raw/' + self.wanted + '/' + str(i) + '.txt', html)
-            print str(i) + '/' + str(pagenum - 1)
+            print str(i) + '/' + str(pagenum)
             i += 1
         return True
 
