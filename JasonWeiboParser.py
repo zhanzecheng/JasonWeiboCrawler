@@ -73,7 +73,7 @@ class JasonWeiboParser:
                 time = ct.text.split(u'\xa0')[0]
                 weibo.time = self.gettime(self, time, parsingtime)
                 self.weibos.append(weibo.__dict__)
-        f.close()
+            f.close()
 
     @staticmethod
     def gettime(self, timestr, parsingtime):
