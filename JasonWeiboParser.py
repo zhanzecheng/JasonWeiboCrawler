@@ -10,6 +10,25 @@ import json
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+
+# this function is used to uniqfy the list, see: http://www.peterbe.com/plog/uniqifiers-benchmark
+def f5(seq, idfun=None):
+    # order preserving
+    if idfun is None:
+        def idfun(x): return x
+    seen = {}
+    result = []
+    for item in seq:
+        marker = idfun(item)
+        # in old Python versions:
+        # if seen.has_key(marker)
+        # but in new ones:
+        if marker in seen: continue
+        seen[marker] = 1
+        result.append(item)
+    return result
+
+
 def deletefilesorfolders(src):
     '''
     delete files or folders
@@ -21,12 +40,13 @@ def deletefilesorfolders(src):
             pass
     elif os.path.isdir(src):
         for item in os.listdir(src):
-            itemsrc=os.path.join(src,item)
+            itemsrc = os.path.join(src, item)
             deletefilesorfolders(itemsrc)
         try:
             os.rmdir(src)
         except:
             pass
+
 
 class JasonWeiboParser:
     '''
@@ -49,30 +69,33 @@ class JasonWeiboParser:
             selector = etree.HTML(html)
             weiboitems = selector.xpath('//div[@class="c"][@id]')
             for item in weiboitems:
-                weibo = Weibo()
-                weibo.id = item.xpath('./@id')[0]
-                cmt = item.xpath('./div/span[@class="cmt"]')
-                if len(cmt) != 0:
-                    weibo.isrepost = True
-                    weibo.content = cmt[0].text
-                else:
-                    weibo.isrepost = False
-                ctt = item.xpath('./div/span[@class="ctt"]')[0]
-                if ctt.text is not None:
-                    weibo.content += ctt.text
-                for a in ctt.xpath('./a'):
-                    if a.text is not None:
-                        weibo.content += a.text
-                    if a.tail is not None:
-                        weibo.content += a.tail
-                if len(cmt) != 0:
-                    reason = cmt[1].text.split(u'\xa0')
-                    if len(reason) != 1:
-                        weibo.repostreason = reason[0]
-                ct = item.xpath('./div/span[@class="ct"]')[0]
-                time = ct.text.split(u'\xa0')[0]
-                weibo.time = self.gettime(self, time, parsingtime)
-                self.weibos.append(weibo.__dict__)
+                try:
+                    weibo = Weibo()
+                    weibo.id = item.xpath('./@id')[0]
+                    cmt = item.xpath('./div/span[@class="cmt"]')
+                    if len(cmt) != 0:
+                        weibo.isrepost = True
+                        weibo.content = cmt[0].text
+                    else:
+                        weibo.isrepost = False
+                    ctt = item.xpath('./div/span[@class="ctt"]')[0]
+                    if ctt.text is not None:
+                        weibo.content += ctt.text
+                    for a in ctt.xpath('./a'):
+                        if a.text is not None:
+                            weibo.content += a.text
+                        if a.tail is not None:
+                            weibo.content += a.tail
+                    if len(cmt) != 0:
+                        reason = cmt[1].text.split(u'\xa0')
+                        if len(reason) != 1:
+                            weibo.repostreason = reason[0]
+                    ct = item.xpath('./div/span[@class="ct"]')[0]
+                    time = ct.text.split(u'\xa0')[0]
+                    weibo.time = self.gettime(self, time, parsingtime).split('.')[0]
+                    self.weibos.append(weibo.__dict__)
+                except:
+                    continue
             f.close()
 
     @staticmethod
@@ -107,6 +130,8 @@ class JasonWeiboParser:
             return str(parsingtime - datetime.timedelta(minutes=int(num)))
 
     def save(self):
+        self.weibos = f5(self.weibos, lambda weibo: weibo['id'])
+        self.weibos.sort(key=lambda weibo: datetime.datetime.strptime(weibo['time'], '%Y-%m-%d %H:%M:%S'), reverse=True)
         f = open(sys.path[0] + '/Weibo_parsed/' + self.uid + '.txt', 'w')
         jsonstr = json.dumps(self.weibos, indent=4, ensure_ascii=False)
         f.write(jsonstr)
@@ -116,7 +141,7 @@ class JasonWeiboParser:
         '''
         delete the raw files and folder
         '''
-        src=sys.path[0] + '/Weibo_raw/' + self.uid
+        src = sys.path[0] + '/Weibo_raw/' + self.uid
         deletefilesorfolders(src)
 
 
