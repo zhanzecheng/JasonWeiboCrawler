@@ -55,18 +55,20 @@ if __name__ == '__main__':
                     except:
                         trycount = 20
                     if sys.argv[8] == 't':
-                        print jasonCrawler.startcrawling(trycount=trycount,istest=True)
+                        print jasonCrawler.startcrawling(trycount=trycount, istest=True)
                     else:
                         print jasonCrawler.startcrawling(trycount=trycount)
                 elif sys.argv[7] == 'm':
                     try:
                         trycount = int(sys.argv[9])
-                        interval = int(sys.argv[10])
                     except:
                         trycount = 20
+                    try:
+                        interval = int(sys.argv[10])
+                    except:
                         interval = 10
                     if sys.argv[8] == 't':
-                        print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount,istest=True)
+                        print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount, istest=True)
                     else:
                         print jasonCrawler.multithreadcrawling(interval=interval, trycount=trycount)
                 else:
