@@ -7,6 +7,11 @@ import re
 import datetime
 import json
 
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -81,11 +86,11 @@ class JasonWeiboParser:
                     ctt = item.xpath('./div/span[@class="ctt"]')[0]
                     if ctt.text is not None:
                         weibo.content += ctt.text
-                    for a in ctt.xpath('./a'):
-                        if a.text is not None:
-                            weibo.content += a.text
-                        if a.tail is not None:
-                            weibo.content += a.tail
+                    for tag in ctt.xpath('./*'):
+                        if tag.tag == 'br' and tag.tail is not None:
+                            weibo.content += tag.tail + ' '
+                        elif tag.tag == 'a' and tag.text is not None:
+                            weibo.content += tag.text
                     if len(cmt) != 0:
                         reason = cmt[1].text.split(u'\xa0')
                         if len(reason) != 1:
