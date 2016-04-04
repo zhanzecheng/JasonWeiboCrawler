@@ -89,8 +89,11 @@ class JasonWeiboParser:
                     for tag in ctt.xpath('./*'):
                         if tag.tag == 'br' and tag.tail is not None:
                             weibo.content += tag.tail + ' '
-                        elif tag.tag == 'a' and tag.text is not None:
-                            weibo.content += tag.text
+                        elif tag.tag == 'a':
+                            if tag.text is not None:
+                                weibo.content += tag.text
+                            if tag.tail is not None:
+                                weibo.content += tag.tail
                     if len(cmt) != 0:
                         reason = cmt[1].text.split(u'\xa0')
                         if len(reason) != 1:
