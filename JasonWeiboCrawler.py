@@ -8,6 +8,7 @@ import time
 import urllib
 import re
 import json
+import base64
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -24,9 +25,44 @@ class JasonWeiboCrawler:
     This class provides two modes to download weibo texts, single-thread and multi-thread.
     '''
 
-    def __init__(self, cookie, wanted_user):
-        self.cook = {"Cookie": cookie}
-        self.wanted = wanted_user
+    def __init__(self, username, password, wanted):
+        self.username=username
+        self.password=password
+        self.cook = {"Cookie":self. login()}
+        self.wanted = wanted
+
+    def login(self):
+        self.username = base64.b64encode(self.username.encode('utf-8')).decode('utf-8')
+        postData = {
+            "entry": "sso",
+            "gateway": "1",
+            "from": "null",
+            "savestate": "30",
+            "useticket": "0",
+            "pagerefer": "",
+            "vsnf": "1",
+            "su": self.username,
+            "service": "sso",
+            "sp": self.password,
+            "sr": "1440*900",
+            "encoding": "UTF-8",
+            "cdult": "3",
+            "domain": "sina.com.cn",
+            "prelt": "0",
+            "returntype": "TEXT",
+        }
+        loginURL = r'https://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.15)'
+        session = requests.Session()
+        res = session.post(loginURL, data = postData)
+        jsonStr = res.content.decode('gbk')
+        info = json.loads(jsonStr)
+        if info["retcode"] == "0":
+            cookies = session.cookies.get_dict()
+            output = ''
+            for key,value in cookies.items():
+                output+=key + "=" + value+'; '
+        output=output.rstrip('; ')
+        return output
 
     def geturl(self, pagenum=1,istest=False):
         url = 'http://weibo.cn/' + self.wanted
