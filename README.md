@@ -44,7 +44,7 @@ sudo pip install lxml urllib request
 
 另外，程序最后会输出两行，一行显示True或者False。True表示爬取过程很顺利，没有丢失页面，否则显示False；第二行是Done！表示程序结束。
 
-解析的结果将存在/Weibo_parsed/文件夹里，以用户displayID为命名的.txt文件；关键词结果存在/keyword/文件夹里，以关键词为命名的.txt文件。而/Weibo_raw/是过渡文件夹，用来存爬取成功但未解析的微博页面文件，程序自动删除，若希望保留，只需注释掉main.py第69行的clean()方法调用即可。
+解析的结果将存在/Weibo_parsed/文件夹里，以用户displayID为命名的.txt文件；关键词结果存在/keyword/文件夹里，以关键词为命名的.txt文件。而/Weibo_raw/是过渡文件夹，用来存爬取成功但未解析的微博页面文件，程序自动删除，若希望保留，只需注释掉main.py第83行的clean()方法调用即可。
 
 -------------------
 写在后面：
