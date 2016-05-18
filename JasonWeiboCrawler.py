@@ -61,6 +61,8 @@ class JasonWeiboCrawler:
             output = ''
             for key,value in cookies.items():
                 output+=key + "=" + value+'; '
+        else:
+            exit(-1);
         output=output.rstrip('; ')
         return output
 
