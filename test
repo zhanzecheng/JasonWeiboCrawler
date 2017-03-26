@@ -1,0 +1,52 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <stdio.h> 
+std::string num[10];
+int conver(std::string num[], int low, int high)
+{
+	int sum = 0;
+	for (int i = low; i <= high; ++i)
+	{
+		int j;
+		if (num[i] == "zero")j = 0;
+		else if (num[i] == "one")j = 1;
+		else if (num[i] == "two")j = 2;
+		else if (num[i] == "three")j = 3;
+		else if (num[i] == "four")j = 4;
+		else if (num[i] == "five")j = 5;
+		else if (num[i] == "six")j = 6;
+		else if (num[i] == "seven")j = 7;
+		else if (num[i] == "eight")j = 8;
+		else if (num[i] == "nine")j = 9;
+		sum = sum * 10 + j;
+	}
+	return sum;
+}
+int main()
+{
+	std::string str;
+	while (true)
+	{
+		int flag1 = 0, flag2 = 0;
+		int i = 0;
+		while (std::cin >> str)
+		{
+			if (str == "+" || str == "-") flag1 = i;
+			else if (str == "=") flag2 = i;
+			num[i++] = str;
+			if (std::cin.get() == '\n') break;
+		}
+		if (i == 4 && num[0] == "zero" && num[2] == "zero") break;
+		int a = conver(num, 0, flag1 - 1);
+		int b = conver(num, flag1 + 1, flag2 - 1);
+		char op = num[flag1][0];
+		switch (op)
+		{
+		case '+': std::cout << a + b << std::endl;break;
+		case '-': std::cout << a - b << std::endl;break;
+		}
+
+	}
+	return 0;
+}
